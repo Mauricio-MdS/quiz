@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 )
 
 type problem struct {
@@ -15,11 +16,14 @@ type problem struct {
 
 type quiz []problem
 
+
+
 func main() {
 	csv := flag.String("csv", "problems.csv", "Filename of the quiz csv file in the format\"question,answer\". Defaults to \"problems.csv\".")
+	timeLimit := flag.Int("limit", 30, "Time in seconds to complete the quiz. Defaults to 30s.")
 	flag.Parse()
-	q := openCSV(*csv)
-	play(q)
+	q := openCSV(*csv)	
+	play(q, *timeLimit)
 }
 
 // errorExit displays error and then exit
@@ -53,20 +57,34 @@ func parseLines(records [][]string) quiz {
 }
 
 // play display question and receive answer of a quiz
-func play(q quiz) {
+func play(q quiz, timeLimit int) {
 	points := 0
-	var input string
+	answerChan := make(chan string)
 
+	fmt.Printf("The quiz will start with a timer of %v seconds. Press enter to start.", timeLimit)
+	fmt.Scanln()
+	timer := time.NewTimer(time.Duration(time.Second * time.Duration(timeLimit)))
+
+	loop:
 	for i, problem := range q {
 		fmt.Printf("Question %d: %s\n", i+1, problem.question)
-		_, err := fmt.Scanf("%s\n", &input)
-		if err != nil {
-			errorExit(err)
-		}
-		if input == problem.answer {
-			points++
-		} 
+		go playerInput(answerChan)
+		select {
+		case <- timer.C:
+			break loop
+		case ans := <-answerChan:
+			if ans == problem.answer {
+				points++
+			} 
+		}		
 	}
 
 	fmt.Printf("Game over! You scored %v of %v points.", points, len(q))
+}
+
+// playerInput gets input for the player and puts in the answerChan
+func playerInput(answerChan chan string){
+	var input string
+	fmt.Scanf("%s\n", &input)
+	answerChan <- input
 }
