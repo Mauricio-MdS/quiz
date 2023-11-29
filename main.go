@@ -73,7 +73,7 @@ func play(q quiz, timeLimit int) {
 		case <- timer.C:
 			break loop
 		case ans := <-answerChan:
-			if ans == problem.answer {
+			if strings.TrimSpace(strings.ToLower(ans)) == strings.TrimSpace(strings.ToLower(problem.answer)) {
 				points++
 			} 
 		}		
