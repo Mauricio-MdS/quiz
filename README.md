@@ -1,6 +1,20 @@
 # Quiz Game
 
+Read from a csv file and gives a quiz to the user.
+
 Exercise 1 from [Gophercises](https://gophercises.com/)
+
+## Optional parameters
+
+- csv: Filename of the quiz csv file in the format"question,answer". Defaults to "problems.csv".
+- limit: Time in seconds to complete the quiz. Defaults to 30s.
+- random: If true, will randomize the question order. Defaults to false.
+
+## Example usage
+
+```bash
+go run main.go -csv="problems.csv" -limit=15 -random=true
+```
 
 ## Part 1 ✓
 
@@ -42,9 +56,9 @@ Users should be asked to press enter (or some other key) before the timer starts
 
 At the end of the quiz the program should still output the total number of questions correct and how many questions there were in total. Questions given invalid answers or unanswered are considered incorrect.
 
-## Bonus
+## Bonus ✓
 
 As a bonus exercises you can also...
 
 1. ✓ Add string trimming and cleanup to help ensure that correct answers with extra whitespace, capitalization, etc are not considered incorrect. _Hint: Check out the [strings](https://golang.org/pkg/strings/) package._
-2. ☐ Add an option (a new flag) to shuffle the quiz order each time it is run.
+2. ✓ Add an option (a new flag) to shuffle the quiz order each time it is run.

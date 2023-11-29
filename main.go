@@ -5,6 +5,7 @@ import (
 	"encoding/csv"
 	"flag"
 	"fmt"
+	"math/rand"
 	"os"
 	"strings"
 	"time"
@@ -20,9 +21,13 @@ type quiz []problem
 
 func main() {
 	csv := flag.String("csv", "problems.csv", "Filename of the quiz csv file in the format\"question,answer\". Defaults to \"problems.csv\".")
+	random := flag.Bool("random", false, "If true, will randomize the question order. Defaults to false.")
 	timeLimit := flag.Int("limit", 30, "Time in seconds to complete the quiz. Defaults to 30s.")
 	flag.Parse()
-	q := openCSV(*csv)	
+	q := openCSV(*csv)
+	if *random {
+		q = shuffleQuiz(q)
+	}
 	play(q, *timeLimit)
 }
 
@@ -87,4 +92,14 @@ func playerInput(answerChan chan string){
 	var input string
 	fmt.Scanf("%s\n", &input)
 	answerChan <- input
+}
+
+
+//shuffleQuiz randomizes the order of the quiz
+func shuffleQuiz(q quiz) quiz {
+	for i := range q {
+		r := rand.Intn(len(q))
+		q[i], q[r] = q[r], q[i]
+	}
+	return q
 }
